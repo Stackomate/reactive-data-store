@@ -1,0 +1,100 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<h1> TopoSort for State Management </h1>
+
+<div class="row">
+	<div class="col">
+
+		<div id="mynetwork">
+
+		</div>
+
+	</div>
+	<div class="col" id="details">
+
+	<select [(ngModel)]="selected">
+      <option *ngFor="let n of stateObjects" [value]="getId(n)">{{n.label}}</option>
+    </select>
+
+		<input [(ngModel)]="nextValue" />
+		<input [(ngModel)]="asNumber" type="checkbox" />
+
+		<button (click)="toggleRevision(selected, nextValue, asNumber)">
+  {{inRevision(selected) ? "Remove" : "Add"}} {{toLabel(selected)}} 
+  {{inRevision(selected) ? "from" : "for"}} Revision </button>
+		<button (click)="step()"> Trigger revision </button>
+		<button (click)="addPropToZ()"> Add Prop to Z </button>
+
+
+		<div>
+			<h5>isRevising: <code>{{reactiveState.isRevising}}</code></h5> 
+		</div>
+
+		<div>
+			<h5>Current Item: <code>{{toLabel(reactiveState.currentItem)}}</code></h5>
+		</div>
+
+		<div>
+			<h5>Starting Nodes:</h5>
+			<table class="table">
+				<thead class="thead-light">
+					<tr>
+						<th>Item </th>
+						<th>NewValue</th>
+						<th> PreviousValue</th>
+					</tr>
+				</thead>
+				<tr *ngFor="let i of reactiveState.dirtyNodes | keyvalue">
+					<td>{{toLabel(i.key)}}</td>
+					<td> {{i.value}} </td>
+					<td> {{toObject(i.key).value}}</td>
+				</tr>
+			</table>
+		</div>
+
+
+		<div>
+			<h5>Marked for Revision:</h5>
+			<span *ngFor="let i of reactiveState.toReview"  class="badge badge-light">
+				{{toLabel(i)}}
+			</span>
+		</div>
+
+		<div>
+			<h5>Already Reviewed:</h5>
+			<table class="table">
+				<thead class="thead-light">
+					<tr>
+						<th>Item </th>
+						<th>Actions </th>
+						<th>NewValue</th>
+						<th> PreviousValue</th>
+					</tr>
+				</thead>
+				<tr *ngFor="let i of reactiveState.reviewed | keyvalue">
+					<td>{{toLabel(i.key)}}</td>
+					<td> {{i.value.actions | json}}</td>
+					<td> {{i.value.value}} </td>
+					<td> {{toObject(i.key).value}}</td>
+				</tr>
+			</table>
+		</div>
+
+		<div>
+			<h5>All Nodes: ({{reactiveState.allNodes.size}})</h5>
+      <span *ngFor="let i of reactiveState.allNodes" (click)="log(i.value)" [title]="i.value"  class="badge badge-light">{{i.label}}</span>
+		</div>
+
+
+		<div>
+			<h5>Sorted:</h5>
+			<table class="table">
+        <tr  *ngFor="let l of reactiveState.sorted; let index = index">
+          <td> {{index}} </td>
+          <td> <span *ngFor="let m of l" class="badge badge-light"> {{toLabelFromObject(m)}}</span> </td>
+        </tr>
+      </table>
+		</div>
+
+	</div>
+</div>
