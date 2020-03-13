@@ -11,6 +11,4 @@ export {ReactiveNode} from './lib/types';
 export {MapValuesTo, MapValuesToImmutable} from './lib/utils/prop-factories';
 export {propUtils, pushIfChanged} from './lib/utils/prop-utils';
 
-
-/* TODO: MapToProp with dynamic arguments */
 /* TODO: Explain Types (node - ReactiveNode, InputSummary) */

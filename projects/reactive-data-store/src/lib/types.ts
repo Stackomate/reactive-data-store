@@ -4,11 +4,11 @@ import { StateNode, PropNode, State } from './core/classes';
  * Contains the changes that have been made on the input subscription arrays.
  */
 export type SubscriptionChanges<M = AnyReactiveNode> = {
-    /* TODO: Narrow down input types */
-    added: Map<number, M>,
-    removed: Map<number, M>,
+    /* TODO: Narrow down input types. Use custom app interface? */
+    added: Map<number, InputsOf<M>>,
+    removed: Map<number, InputsOf<M>>,
     /* This currently refers to isFirstRun */
-    /* TODO: Add option for isItemInit */
+    /* TODO: Add option for isItemInit/isStoreInit */
     isInit: boolean,
 }
 
@@ -43,7 +43,7 @@ export type ValuesOfInputs<Inputs extends ReactiveInputsArray> = {
  * the current and previous value for a given Reactive Node
  */
 export type ChangesSummary<RNode> = RNode extends AnyReactiveNode ? {
-    actions: ActionsOf<RNode>, /* TODO: Improve Type */
+    actions: ActionsOf<RNode>,
     value: ValueOf<RNode>,
     /** If initializing, previous and value will be the same value */
     previous: ValueOf<RNode>,
@@ -63,7 +63,6 @@ export type NonEmptyArray<T> = [T, ...T[]];
 /**
  * Object returned when the Prop Object Function runs.
  */
-/* TODO: Is null affecting the Intellisense inference? no */
 export type PropSummaryReturn<Value, Actions> = null | {
     actions: NonEmptyArray<Actions>,
     value: Value
@@ -99,6 +98,13 @@ export type ReactiveNodeOfValue<T> = StateNode<T> | PropNode<T, any, any>;
 /** SET_KEY action type for Reactive Arrays */
 export type SET_KEY_ACTION<V> = ['SET_KEY', [number, V]];
 export type DELETE_KEY_ACTION<V> = ['DELETE_KEY', number];
+
+
+/* TODO: Remove this code, it's only used for testing recursive types in TS
+*/
+// export type TEST_INNER_ACTION = ['SET_INNER', [number,  TEST ]];
+// export type TEST = ['SET', string] | TEST_INNER_ACTION;
+
 /* TODO: Fix type below */
 export type SET_KEY_INNER_ACTION<V> = ['SET_KEY_INNER', [number, any /* RAAction<V>[] */]];
 
