@@ -4,11 +4,11 @@ import { StateNode, PropNode, State } from './core/classes';
  * Contains the changes that have been made on the input subscription arrays.
  */
 export type SubscriptionChanges<M = AnyReactiveNode> = {
-    /* TODO: Narrow down input types. Use custom app interface? */
+    /* TODO: (LOW) Narrow down input types. Use custom map interface? */
     added: Map<number, InputsOf<M>>,
     removed: Map<number, InputsOf<M>>,
     /* This currently refers to isFirstRun */
-    /* TODO: Add option for isItemInit/isStoreInit */
+    /* TODO: (MEDIUM) Add option for isItemInit/isStoreInit */
     isInit: boolean,
 }
 
@@ -99,19 +99,11 @@ export type ReactiveNodeOfValue<T> = StateNode<T> | PropNode<T, any, any>;
 export type SET_KEY_ACTION<V> = ['SET_KEY', [number, V]];
 export type DELETE_KEY_ACTION<V> = ['DELETE_KEY', number];
 
-
-/* TODO: Remove this code, it's only used for testing recursive types in TS
-*/
-// export type TEST_INNER_ACTION = ['SET_INNER', [number,  TEST ]];
-// export type TEST = ['SET', string] | TEST_INNER_ACTION;
-
-/* TODO: Fix type below */
-export type SET_KEY_INNER_ACTION<V> = ['SET_KEY_INNER', [number, any /* RAAction<V>[] */]];
-
 /**
  * Allowed Actions for ReactiveArrays
  */
-export type RAAction<T> = SET_KEY_ACTION<T> | ['SET', T[]] | DELETE_KEY_ACTION<T> | SET_KEY_INNER_ACTION<T>;
+export type SET_KEY_INNER_ACTION<V> = ['SET_KEY_INNER', [number, RAAction<V>[] ]];
+export type RAAction<T> = (T extends Array<infer M> ? SET_KEY_INNER_ACTION<M> : never) | SET_KEY_ACTION<T> | ['SET', T[]] | DELETE_KEY_ACTION<T>;
 
 // type SET_MAP_KEY<K> = ['SET_MAP_KEY', [K, K]];
 // type SET_MAP_VALUE<K, V> = ['SET_MAP_VALUE', [K, V]];
@@ -140,8 +132,6 @@ export type ListenerApi<K extends ReactiveNode<any, any, any>[]> = {
     deps: ReactiveInputsArray
 };
 
-/* TODO: Improve Type any in Inputs */
-/* TODO: "Inputs" Might be why Intellisense is broken for prop fn resolve */
 /** A Reactive Node is either a Prop or State */
 export type ReactiveNode<
     Value,
@@ -203,6 +193,7 @@ type nodeSummaryCommons<N extends AnyReactiveNode> = {
     dependencyChanges: [] | DependencyChanges<InputsOf<N>>, 
     previousValue: ValueOf<N>, 
     value: ValueOf<N>,
+    /* TODO: Add generic */
     subscriptionChanges: SubscriptionChanges,
     isStateNode: N extends StateNode<any> ? true: false,
     isPropNode: N extends PropNode<any, any, any> ? true : false
@@ -211,7 +202,7 @@ type LooseNodeSummaryCommons<N> = {
     dependencyChanges: [] | DependencyChanges<InputsOf<N>>, 
     previousValue: ValueOf<N>, 
     value: ValueOf<N>,
-    subscriptionChanges: SubscriptionChanges,
+    subscriptionChanges: SubscriptionChanges<N>,
     isStateNode: N extends StateNode<any> ? true: false,
     isPropNode: N extends PropNode<any, any, any> ? true : false
 }
@@ -220,13 +211,11 @@ type LooseNodeSummaryCommons<N> = {
 export type SubscriptionModificationsMap = Map<PropNode<any, any, any>, SubscriptionChanges>;
 
 export interface LooseNodePushedSummary<N> extends LooseNodeSummaryCommons<N> {
-    /* TODO: Improve */
     actions: NonEmptyArray<ActionsOf<N>>,
     pushed: true,
     error: null | Error    
 }
 export interface NodePushedSummary<N extends AnyReactiveNode> extends nodeSummaryCommons<N> {
-    /* TODO: Improve */
     actions: NonEmptyArray<ActionsOf<N>>,
     pushed: true,
     error: null | Error
@@ -289,9 +278,11 @@ export type globalSummary = {
 
     /* TODO: Level 0 is state-only */
     /** Give the topological sort for the graph resolution. */
-    resolutionOrder: Array<Set<AnyReactiveNode>>
+    resolutionOrder: ResolutionOrderArray
 }
 
+export type ResolutionOrderArray = [] | [Set<StateNode<any>>, ...RemainingLevels ];
+export type RemainingLevels = Set<PropNode<any, any, any>>[];
 
 export type GlobalListener = (globalSummary: globalSummary) => void;
 

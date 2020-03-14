@@ -25,7 +25,7 @@ export class StateNode<Value> {
    */
   public storeInstance: ReactiveDataStore;
 
-  /* TODO: Maybe use pairSet to specify both target prop and target input index*/
+  /* TODO: (LOW) Maybe use pairSet to specify both target prop and target input index*/
   /**
    * Add Prop to Outputs Set
    * @param prop 
@@ -69,7 +69,6 @@ export class PropNode<Value, Inputs extends ReactiveInputsArray, Actions extends
   constructor(
     public inputs: Inputs,
     public fn: PropFn<Inputs, Value, Actions>,
-    /* TODO: What type to use here? Include .set ? */
     public api: Record<string, any> = {},
     public label?: string,
   ) {

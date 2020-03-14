@@ -67,10 +67,11 @@ export const ReactiveArray = function <T>(arr: (T | ReactiveNode<T, any, any>)[]
                 /* TODO: Improve rNode type */
                 rNode.actions.forEach((action: any) => {
                     if (action[0] === 'SET_KEY' || action[0] === 'DELETE_KEY') {
+                        /* TODO: Remove as any from here */
                         changes.push([
                             'SET_KEY_INNER',
-                            [index, action]
-                        ])
+                            [index, [action] ]
+                        ] as any)
                     } else {
                         changes.push([
                             'SET_KEY',

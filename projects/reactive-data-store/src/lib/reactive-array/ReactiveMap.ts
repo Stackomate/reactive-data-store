@@ -1,6 +1,6 @@
 import { MapValuesTo } from '../utils/prop-factories';
 import { ReactiveArray } from './reactive-array';
-import { ReactiveNode, RMapAction } from '../types';
+import { ReactiveNode, RMapAction, NonEmptyArray, PropSummaryReturn } from '../types';
 import { Prop, PropFactory } from '../core/classes';
 import { pushChange, propUtils } from '../utils/prop-utils';
 import { RAAction } from 'reactive-data-store/lib/types';
@@ -10,7 +10,8 @@ export const ReactiveMap = <K, V>(entries: Array<[K | ReactiveNode<K, any, any>,
     /* TODO: Forbid entries to provide same key twice, maybe Dev-only */
     let reactiveTuples = entries.map((tuple: [K, V]) => ReactiveArray(tuple));
     /* TODO: Optimize return type */
-    let resultProp = PropFactory(reactiveTuples) <Map<K, V>> ((inputChanges, previousValue, subsChanges) => {
+    let resultProp = PropFactory(reactiveTuples) <Map<K, V>, RMapAction<K, V>> (
+        (inputChanges, previousValue, subsChanges) => {
 
         let { isInit } = subsChanges;
         
@@ -86,10 +87,10 @@ export const ReactiveMap = <K, V>(entries: Array<[K | ReactiveNode<K, any, any>,
             }            
         })   
         
-        return {
-            actions: changes,
+        return changes.length > 0 ? {
+            actions: changes as NonEmptyArray<RMapAction<K,V>>,
             value
-        }
+        } : null;
     
         
     });

@@ -1,4 +1,4 @@
-import { AnyReactiveNode, ArrayIndexes, execOptions, GlobalListener, innerListenersDeclaration, ListenerApi, listenersDeclaration, ListenFnInputs, listenReturn, ReactiveInputsArray, reviewedMap, SubscriptionModificationsMap } from '../types';
+import { AnyReactiveNode, ArrayIndexes, execOptions, GlobalListener, innerListenersDeclaration, ListenerApi, listenersDeclaration, ListenFnInputs, listenReturn, ReactiveInputsArray, reviewedMap, SubscriptionModificationsMap, ResolutionOrderArray } from '../types';
 import { addDependencies } from './add-dependencies';
 import { PropNode } from './classes';
 import { idGenFn } from './ids';
@@ -82,7 +82,7 @@ export class ReactiveDataStore {
      * Contains Nodes ordered in a topological manner.
      * Each array item is a level, each level contains a Set of Nodes.
      */
-    public sorted: Array<Set<AnyReactiveNode>>;
+    public sorted: ResolutionOrderArray;
     /** Whether state and props are being revised */
     public isRevising = false;
     /* TODO: Improve type */
