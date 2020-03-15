@@ -174,7 +174,6 @@ export type listenersDeclaration = {
     onReset?: innerListenersDeclaration['onReset'][];
 }
 
-/* TODO: Improve type */
 export type ReviewedNodeResult<Value, Inputs extends ReactiveInputsArray, Actions extends DefaultActionTuple> = {
     actions: NonEmptyArray<Actions>,
     value: Value,

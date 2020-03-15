@@ -49,7 +49,6 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
         /* TODO: Add error-handling cases */
         let runFn = prop.fn(
             args, prop.value, subscriptionChanges);
-        /* We augument the result */
 
         /* Throw error if undefined (no return) */
         /* TODO: May be disabled for production? */
@@ -57,6 +56,7 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
             throw new Error('Prop did not return null or actions and value')
         }
 
+        /* We augument the returned object */
         let fnResult: ReviewedNodeResult<A, B, C> = runFn === null ? {
             value: prop.value,
             previousValue: prop.value,
