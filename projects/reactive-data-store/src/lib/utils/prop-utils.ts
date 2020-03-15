@@ -1,4 +1,4 @@
-import { SubscriptionChanges, AnyReactiveNode, ChangesSummary, ReactiveNode } from '../types';
+import { SubscriptionChanges, AnyReactiveNode, InputChangesSummary, ReactiveNode } from '../types';
 
  type PushReturn<V> = {
      actions: [['SET', V]],
@@ -28,7 +28,7 @@ export const pushChange = <T>(value: T) : PushReturn<T> => {
 
 /* TODO: Maybe separate into different items */
 /* TODO: Improve type, narrow down Reactive node type */
-export const propUtils = (inputs: ChangesSummary<ReactiveNode<any, any, any>>[], subs: SubscriptionChanges) => ({
+export const propUtils = (inputs: InputChangesSummary<ReactiveNode<any, any, any>>[], subs: SubscriptionChanges) => ({
     onInitSelf: (fn: () => void) => {
       if (subs.isInit === true) {
           fn();
@@ -54,7 +54,7 @@ export const propUtils = (inputs: ChangesSummary<ReactiveNode<any, any, any>>[],
     },
     /* TODO: Maybe improve performance by using closure */
     /* TODO There should be a samewithchanges map in subscription changes, for better performance */
-    forSameWithChanges: (fn: (node: ChangesSummary<AnyReactiveNode>, index: number) => void) => {
+    forSameWithChanges: (fn: (node: InputChangesSummary<AnyReactiveNode>, index: number) => void) => {
         let changedIndexes = new Set<number>();
 
         inputs.forEach((value, index) => {

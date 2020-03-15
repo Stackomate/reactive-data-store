@@ -1,16 +1,24 @@
 import { StateNode, PropNode, State } from './core/classes';
 
+
+/* General Extractors and Utils */
+// https://stackoverflow.com/questions/56006111/is-it-possible-to-define-a-non-empty-array-type-in-typescript/56006703
 /**
- * Contains the changes that have been made on the input subscription arrays.
+ * Force an array to have at least one item
  */
-export type SubscriptionChanges<M = AnyReactiveNode> = {
-    /* TODO: (LOW) Narrow down input types. Use custom map interface? */
-    added: Map<number, InputsOf<M>>,
-    removed: Map<number, InputsOf<M>>,
-    /* This currently refers to isFirstRun */
-    /* TODO: (MEDIUM) Add option for isItemInit/isStoreInit */
-    isInit: boolean,
-}
+export type NonEmptyArray<T> = [T, ...T[]];
+
+/**
+ * Get only the index numbers from an array
+ */
+export type ArrayIndexes<I> = Exclude<keyof I & string, keyof Array<any>>
+
+
+
+
+
+
+/* Reactive Node Extractors, can extract Action, Inputs and Value types */
 
 /**
  * Get array of Possible Actions for a given Reactive Node
@@ -38,50 +46,61 @@ export type ValuesOfInputs<Inputs extends ReactiveInputsArray> = {
     [P in keyof Inputs]: ValueOf<Inputs[P]>
 }
 
+
+
+
+
+/* Related to PropFn type */
+
+/**
+ * Contains the changes that have been made on the input subscription.
+ */
+export type SubscriptionChanges<M = AnyReactiveNode> = {
+    /* TODO: (LOW) Narrow down input types. Use custom map interface? */
+    added: Map<number, InputsOf<M>>,
+    removed: Map<number, InputsOf<M>>,
+    /* This currently refers to isFirstRun */
+    /* TODO: (MEDIUM) Add option for isItemInit/isStoreInit */
+    isInit: boolean,
+}
+
+/**
+ * Map every input into its Summary of Changes
+ */
+export type InputsArrayChanges<Inputs extends ReactiveInputsArray> = {
+    [P in keyof Inputs]: InputChangesSummary<Inputs[P]>
+};
+
 /**
  * The summary of changes object contains actions,
- * the current and previous value for a given Reactive Node
+ * the current and previous value for a given Reactive Node.
+ * Undefined in case the index does not have a Reactive Node.
  */
-export type ChangesSummary<RNode> = RNode extends AnyReactiveNode ? {
+export type InputChangesSummary<RNode> = RNode extends AnyReactiveNode ? {
     actions: ActionsOf<RNode>,
     value: ValueOf<RNode>,
     /** If initializing, previous and value will be the same value */
     previous: ValueOf<RNode>,
 } : undefined;
 
-/**
- * Get only the index numbers from an array
- */
-export type ArrayIndexes<I> = Exclude<keyof I & string, keyof Array<any>>
-
-// https://stackoverflow.com/questions/56006111/is-it-possible-to-define-a-non-empty-array-type-in-typescript/56006703
-/**
- * Force an array to have at least one item
- */
-export type NonEmptyArray<T> = [T, ...T[]];
 
 /**
  * Object returned when the Prop Object Function runs.
  */
-export type PropSummaryReturn<Value, Actions> = null | {
+export type PropFnReturn<Value, Actions> = null | {
     actions: NonEmptyArray<Actions>,
     value: Value
 }
 
 /** Type for Property Evaluation Function. Should return a summary of changes */
 export type PropFn<InputsArray extends ReactiveInputsArray, Value, Actions> = (
-    inputChanges: DependencyChanges<InputsArray>,
+    inputChanges: InputsArrayChanges<InputsArray>,
     /* This messes up the Value in Prop when it gets declared as a function parameter */
     previousValue: Value,
     subscriptionChanges: SubscriptionChanges,
-) => PropSummaryReturn<Value, Actions>
+) => PropFnReturn<Value, Actions>
 
-/**
- * Map every input into its Summary of Changes
- */
-export type DependencyChanges<Inputs extends ReactiveInputsArray> = {
-    [P in keyof Inputs]: ChangesSummary<Inputs[P]>
-};
+
 
 /**
  * This is used to trick IntelliSense into getting the specific types of each input.
@@ -181,7 +200,7 @@ export type ReviewedNodeResult<Value, Inputs extends ReactiveInputsArray, Action
     previousValue: Value,
     pushed: true,
     dependencyChanges: {
-        [P in keyof Inputs]: ChangesSummary<Inputs[P]>
+        [P in keyof Inputs]: InputChangesSummary<Inputs[P]>
     }
 } | {
     value: Value,
@@ -189,13 +208,13 @@ export type ReviewedNodeResult<Value, Inputs extends ReactiveInputsArray, Action
     pushed: false,
     actions: [],
     dependencyChanges: {
-        [P in keyof Inputs]: ChangesSummary<Inputs[P]>
+        [P in keyof Inputs]: InputChangesSummary<Inputs[P]>
     }
 }
 
 /* TODO: Improve types (any), use generics for node */
 type nodeSummaryCommons<N extends AnyReactiveNode> = {
-    dependencyChanges: [] | DependencyChanges<InputsOf<N>>, 
+    dependencyChanges: [] | InputsArrayChanges<InputsOf<N>>, 
     previousValue: ValueOf<N>, 
     value: ValueOf<N>,
     /* TODO: Add generic */
@@ -204,7 +223,7 @@ type nodeSummaryCommons<N extends AnyReactiveNode> = {
     isPropNode: N extends PropNode<any, any, any> ? true : false
 }
 type LooseNodeSummaryCommons<N> = {
-    dependencyChanges: [] | DependencyChanges<InputsOf<N>>, 
+    dependencyChanges: [] | InputsArrayChanges<InputsOf<N>>, 
     previousValue: ValueOf<N>, 
     value: ValueOf<N>,
     subscriptionChanges: SubscriptionChanges<N>,
@@ -248,7 +267,6 @@ export type LooseNodeSummary<N> = LooseNodePushedSummary<N> | LooseNodeSameSumma
 export interface SummaryMap extends Map<any, any> {
     clear(): void;
     delete<K>(key: K): boolean;
-    /* TODO: Fix */
     forEach<K extends AnyReactiveNode>(callbackfn: (value: NodeSummary<K>, key: K, map: SummaryMap) => void, thisArg?: any): void;
     get<K extends AnyReactiveNode>(key: K): NodeSummary<K> | undefined;
     has<K extends AnyReactiveNode>(key: K): boolean;

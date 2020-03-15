@@ -1,5 +1,5 @@
 import { yieldForEach } from '../reusable/yield-for-each';
-import { execOptions, ReactiveInputsArray, ReviewedNodeResult, ChangesSummary, DefaultActionTuple } from '../types';
+import { execOptions, ReactiveInputsArray, ReviewedNodeResult, InputChangesSummary, DefaultActionTuple } from '../types';
 import { PropNode } from './classes';
 import { ReactiveDataStore } from './reactive-data-store';
 
@@ -14,7 +14,7 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
         /* TODO: Performance may be improved */
         /* This is similar to map(), but it keeps "empty" slots in the array */
         const args: {
-            [P in keyof B]: ChangesSummary<B[P]>
+            [P in keyof B]: InputChangesSummary<B[P]>
         } = prop.inputs.reduce((acc, input, index) => {
             if (input === undefined) {
                 return acc;

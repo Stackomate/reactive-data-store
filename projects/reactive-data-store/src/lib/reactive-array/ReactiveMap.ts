@@ -1,6 +1,6 @@
 import { MapValuesTo } from '../utils/prop-factories';
 import { ReactiveArray } from './reactive-array';
-import { ReactiveNode, RMapAction, NonEmptyArray, PropSummaryReturn } from '../types';
+import { ReactiveNode, RMapAction, NonEmptyArray } from '../types';
 import { Prop, PropFactory } from '../core/classes';
 import { pushChange, propUtils } from '../utils/prop-utils';
 import { RAAction } from 'reactive-data-store/lib/types';

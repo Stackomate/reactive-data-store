@@ -1,7 +1,7 @@
 import { Prop, PropNode, State, StateNode } from '../core/classes';
 import { ReactiveDataStore } from '../core/reactive-data-store';
 import { setForTransaction } from "../core/set-for-transaction";
-import { AnyReactiveNode, ChangesSummary, NonEmptyArray, PropSummaryReturn, RAAction, ReactiveNode, ReactiveNodeOfValue, SET_KEY_ACTION } from '../types';
+import { AnyReactiveNode, InputChangesSummary, NonEmptyArray, PropFnReturn, RAAction, ReactiveNode, ReactiveNodeOfValue, SET_KEY_ACTION } from '../types';
 import { propUtils, pushChange } from '../utils/prop-utils';
 
 /** Create a Prop that behaves as a ReactiveArray. */
@@ -20,7 +20,7 @@ export const ReactiveArray = function <T>(arr: (T | ReactiveNode<T, any, any>)[]
     });
 
     /* TODO: Improve type */
-    const ret = Prop(reactiveNodesInputs, (inputChanges, previousValue: T[], subscriptionChanges): PropSummaryReturn<T[], RAAction<T>> => {
+    const ret = Prop(reactiveNodesInputs, (inputChanges, previousValue: T[], subscriptionChanges): PropFnReturn<T[], RAAction<T>> => {
 
         let { isInit } = subscriptionChanges;
         let value = previousValue;
@@ -138,7 +138,7 @@ export const push = <T>(rds: ReactiveDataStore, rarr: PropNode<T[], any, any>, v
 
 
 function updateArrayValueAndActions<T>(changes: SET_KEY_ACTION<T>[], value: T[]) {
-    return ([summary, index]: [ChangesSummary<ReactiveNodeOfValue<T>>, number]) => {
+    return ([summary, index]: [InputChangesSummary<ReactiveNodeOfValue<T>>, number]) => {
         /* TODO: Improve code */
         changes.push([
             'SET_KEY',
