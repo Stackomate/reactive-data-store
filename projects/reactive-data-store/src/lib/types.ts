@@ -174,6 +174,7 @@ export type listenersDeclaration = {
     onReset?: innerListenersDeclaration['onReset'][];
 }
 
+/* TODO: ReviewedNodeResult and nodeSummaryCommons have stuff in common, abstract */
 export type ReviewedNodeResult<Value, Inputs extends ReactiveInputsArray, Actions extends DefaultActionTuple> = {
     actions: NonEmptyArray<Actions>,
     value: Value,

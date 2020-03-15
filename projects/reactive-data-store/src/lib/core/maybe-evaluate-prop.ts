@@ -64,13 +64,14 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
             actions: [],
             /* TODO: Type */
             dependencyChanges: args
-        } : {
-                actions: runFn.actions,
-                value: runFn.value,
-                previousValue: prop.value,
-                pushed: true,
-                dependencyChanges: args
-            };
+        } : 
+        {
+            actions: runFn.actions,
+            value: runFn.value,
+            previousValue: prop.value,
+            pushed: true,
+            dependencyChanges: args
+        };
         let changed = runFn !== null;
         if ((runFn !== null) && (runFn.actions.length === 0)) {
             throw new Error(`Declared change, but provided empty actions array`);
