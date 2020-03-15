@@ -20,7 +20,8 @@ export function *propagateStateChange(rds: ReactiveDataStore, i: [AnyReactiveNod
         pushed: true,
         previousValue: item.value,
         /* State never has dependency changes */
-        dependencyChanges: []
+        /* TODO: Remove as any from here */
+        dependencyChanges: [] as any
     });
     if (options.debug === true)
         yield;

@@ -1,4 +1,4 @@
-import { AnyReactiveNode, ArrayIndexes, execOptions, GlobalListener, innerListenersDeclaration, ListenerApi, listenersDeclaration, ListenFnInputs, listenReturn, ReactiveInputsArray, ResolutionOrderArray, reviewedMap, SubscriptionModificationsMap } from '../types';
+import { AnyReactiveNode, ArrayIndexes, execOptions, GlobalListener, innerListenersDeclaration, ListenerApi, listenersDeclaration, ListenFnInputs, listenReturn, ReactiveInputsArray, ResolutionOrderArray, reviewedMap, SubscriptionModificationsMap, DefaultActionTuple } from '../types';
 import { addDependencies } from './add-dependencies';
 import { PropNode } from './classes';
 import { initRDS } from './init-rds';
@@ -183,7 +183,7 @@ export class ReactiveDataStore {
     *propagateStateChange(options: execOptions, i: [AnyReactiveNode, any]) {
         yield* propagateStateChange(this, i, options);
     }
-    *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray, C extends [string, any]>(options: execOptions, prop: PropNode<A, B, C>) {
+    *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray, C extends DefaultActionTuple>(options: execOptions, prop: PropNode<A, B, C>) {
         yield* maybeEvaluateProp<A, B, C>(this, prop, options);
     }
 

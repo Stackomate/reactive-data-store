@@ -1,4 +1,4 @@
-import { ReactiveInputsArray, AnyReactiveNode } from '../types';
+import { ReactiveInputsArray, AnyReactiveNode, DefaultActionTuple } from '../types';
 import { PropFn } from '../types';
 import { ReactiveDataStore } from './reactive-data-store';
 /* TODO: Combine documentation from factories and Nodes to improve maintainability */
@@ -49,7 +49,7 @@ export class StateNode<Value> {
  * @param api Object with list of optional commands for the PropNode (for example, `.set()` method)
  * @param label Optional Label for debugging purposes 
  */
-export class PropNode<Value, Inputs extends ReactiveInputsArray, Actions extends [string, any]> {
+export class PropNode<Value, Inputs extends ReactiveInputsArray, Actions extends DefaultActionTuple> {
 
   /** Internal value that is calculated by the provided function. */
   public value: Value;
@@ -115,7 +115,7 @@ export function State<Value>(value: Value, label?: string) {
  */
 export function Prop<
   Value,
-  Actions extends [string, any],
+  Actions extends DefaultActionTuple,
   Inputs extends ReactiveInputsArray
 >(
   inputs: Inputs,
@@ -134,7 +134,7 @@ export function Prop<
  * @param label Optional Label for debugging purposes 
  */
 export function PropFactory<Inputs extends ReactiveInputsArray>(inputs: Inputs) {
-  return function <Value, Actions extends [string, any] = ['SET', Value]>(
+  return function <Value, Actions extends DefaultActionTuple = ['SET', Value]>(
     fn: PropFn<Inputs, Value, Actions>,
     api: Record<string, any> = {},
     label?: string

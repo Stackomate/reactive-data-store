@@ -1,5 +1,5 @@
 import { PropNode, StateNode } from './classes';
-import { NodeSummary, SubscriptionModificationsMap, SummaryMap, reviewedMap } from '../types';
+import { NodeSummary, SubscriptionModificationsMap, SummaryMap, reviewedMap, AnyReactiveNode } from '../types';
 import { idToObject } from './ids';
 import { getSubscriptionChanges } from "./get-subscription-changes";
 /* TODO: Types */
@@ -9,7 +9,7 @@ export function convertReviewedToSummaries(reviewed: reviewedMap, subscriptionMo
         /* key in reviewed is a number */
         const item = key;
         /* TODO: Maybe remove any */
-        let summaryResult: NodeSummary<any> = summary.pushed === true ? {
+        let summaryResult: NodeSummary<AnyReactiveNode> = summary.pushed === true ? {
             value: summary.value,
             /* TODO: Fix */
             dependencyChanges: summary.dependencyChanges,

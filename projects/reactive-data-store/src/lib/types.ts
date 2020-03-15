@@ -132,10 +132,12 @@ export type ListenerApi<K extends ReactiveNode<any, any, any>[]> = {
     deps: ReactiveInputsArray
 };
 
+export type DefaultActionTuple = [string, any];
+
 /** A Reactive Node is either a Prop or State */
 export type ReactiveNode<
     Value,
-    Actions extends [string, any],
+    Actions extends DefaultActionTuple,
     Inputs extends ReactiveInputsArray
     > = PropNode<Value, Inputs, Actions> | StateNode<Value>;
 
@@ -173,19 +175,22 @@ export type listenersDeclaration = {
 }
 
 /* TODO: Improve type */
-export type ReviewedNodeResult<Value, Actions extends [string, any]> = {
+export type ReviewedNodeResult<Value, Inputs extends ReactiveInputsArray, Actions extends DefaultActionTuple> = {
     actions: NonEmptyArray<Actions>,
     value: Value,
     previousValue: Value,
     pushed: true,
-    /* TODO: Fix type */
-    dependencyChanges: any[]
+    dependencyChanges: {
+        [P in keyof Inputs]: ChangesSummary<Inputs[P]>
+    }
 } | {
     value: Value,
     previousValue: Value,
     pushed: false,
     actions: [],
-    dependencyChanges: any[]
+    dependencyChanges: {
+        [P in keyof Inputs]: ChangesSummary<Inputs[P]>
+    }
 }
 
 /* TODO: Improve types (any), use generics for node */
@@ -293,4 +298,4 @@ export type listenReturn = {
 }
 
 /* TODO: Narrow down type? */
-export type reviewedMap = Map<AnyReactiveNode, ReviewedNodeResult<any, any>>;
+export type reviewedMap = Map<AnyReactiveNode, ReviewedNodeResult<any, any, any>>;
