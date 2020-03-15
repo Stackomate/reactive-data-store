@@ -1,8 +1,7 @@
-import { PropNode, StateNode } from './classes';
 import { ReactiveNode } from '../types';
-import { idGenFn } from './ids';
-import { toposort } from './utils';
+import { PropNode, StateNode } from './classes';
 import { ReactiveDataStore } from './reactive-data-store';
+import { toposort } from './utils';
 
 export function addDependencies(rds: ReactiveDataStore, target: PropNode<any, any, any>, deps: ReactiveNode<any, any, any>[]) {
     let lastTargetInputsLength = target.inputs.length;
@@ -23,7 +22,7 @@ export function addDependencies(rds: ReactiveDataStore, target: PropNode<any, an
         /* If dependency is not registered in RDS yet */
         if (rds.allNodes.has(dep) === false) {
             if (dep instanceof StateNode) {
-                rds.addChange(idGenFn(dep), dep.value);
+                rds.addChange(dep, dep.value);
             }
             rds.addedNodes.add(dep);
         }
@@ -35,7 +34,7 @@ export function addDependencies(rds: ReactiveDataStore, target: PropNode<any, an
     /* TODO: Can be optimized for some cases */
     rds.sorted = toposort(rds.allNodes);
     /* Mark target dependency as dirty */
-    rds.toReview.add(idGenFn(target));
+    rds.toReview.add(target);
     /* TODO: Recreating maps during every new change, this can be optimized with one mutable instance */
     let oldTargetModifications = rds.subscriptionModifications.get(target) || {
         added: new Map(),

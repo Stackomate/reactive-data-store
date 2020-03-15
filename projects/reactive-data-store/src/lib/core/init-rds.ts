@@ -1,8 +1,7 @@
-import { ReactiveDataStore } from './reactive-data-store';
 import { AnyReactiveNode, listenersDeclaration } from '../types';
-import { getAllNodes, toposort } from './utils';
 import { StateNode } from './classes';
-import { idGenFn } from './ids';
+import { ReactiveDataStore } from './reactive-data-store';
+import { getAllNodes, toposort } from './utils';
 
 export function initRDS(rds: ReactiveDataStore, entry: AnyReactiveNode[], listeners: listenersDeclaration) {
     rds.allNodes = getAllNodes(entry);
@@ -15,7 +14,7 @@ export function initRDS(rds: ReactiveDataStore, entry: AnyReactiveNode[], listen
     /* Always render state first */
     rds.allNodes.forEach(n => {
         if (n instanceof StateNode) {
-            rds.addChange(idGenFn(n), n.value);
+            rds.addChange(n, n.value);
         }
     });
     rds.revise({

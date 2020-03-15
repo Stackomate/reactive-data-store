@@ -48,5 +48,5 @@ export function removeDependencies<I extends ReactiveInputsArray, J extends Arra
         });
     });
     /* Mark target for revision */
-    rds.toReview.add(idGenFn(target));
+    rds.toReview.add(target);
 }

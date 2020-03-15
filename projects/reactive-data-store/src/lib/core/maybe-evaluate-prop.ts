@@ -1,15 +1,13 @@
-import { ReactiveInputsArray, execOptions, ReviewedNodeResult } from '../types';
-import { idGenFn } from './ids';
-import { PropNode } from './classes';
 import { yieldForEach } from '../reusable/yield-for-each';
+import { execOptions, ReactiveInputsArray, ReviewedNodeResult } from '../types';
+import { PropNode } from './classes';
 import { ReactiveDataStore } from './reactive-data-store';
 
 export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray, C extends [string, any]>(
     rds: ReactiveDataStore, prop: PropNode<A, B, C>, options: execOptions
 ) {
-    const propId = idGenFn(prop);
-    if (rds.toReview.has(propId)) {
-        rds.currentItem = idGenFn(prop);
+    if (rds.toReview.has(prop)) {
+        rds.currentItem = prop;
         if (options.debug === true)
             yield;
         /* TODO: Typings */
@@ -19,7 +17,7 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
             if (input === undefined) {
                 return acc;
             }
-            const maybeReviewed = (rds.reviewed.get(idGenFn(input)) || {
+            const maybeReviewed = (rds.reviewed.get(input) || {
                 actions: [],
                 value: input.value,
                 previous: input.value,
@@ -78,14 +76,14 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
         if (changed === false && rds.isFirstRun === true) {
             throw new Error(`Property did not emit during init: ${prop.label}`);
         }
-        rds.reviewed.set(propId, fnResult);
-        rds.triggerListeners(rds.listeners.evaluatedProperty, [propId, changed, runFn]);
+        rds.reviewed.set(prop, fnResult);
+        rds.triggerListeners(rds.listeners.evaluatedProperty, [prop, changed, runFn]);
         if (options.debug === true)
             yield;
         if (changed) {
             yield* yieldForEach(prop.outputs, rds.markForCheck.bind(rds, options));
         }
-        rds.toReview.delete(propId);
+        rds.toReview.delete(prop);
         if (options.debug === true)
             yield;
     }

@@ -15,7 +15,7 @@ export function setDependencies(rds: ReactiveDataStore, target: PropNode<any, an
         dep.outputs.add(target);
         if (rds.allNodes.has(dep) === false) {
             if (dep instanceof StateNode) {
-                rds.addChange(idGenFn(dep), dep.value);
+                rds.addChange(dep, dep.value);
             }
             rds.addedNodes.add(dep);
         }
@@ -25,7 +25,7 @@ export function setDependencies(rds: ReactiveDataStore, target: PropNode<any, an
         /* TODO: Can be optimized for some cases */
         rds.sorted = toposort(rds.allNodes);
         /* Mark target dependency as dirty */
-        rds.toReview.add(idGenFn(target));
+        rds.toReview.add(target);
         /* TODO: Recreating maps during every new change, this can be optimized with one mutable instance */
         let oldTargetModifications = rds.subscriptionModifications.get(target) || {
             added: new Map(),

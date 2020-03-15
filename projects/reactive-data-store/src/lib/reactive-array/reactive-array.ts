@@ -1,9 +1,8 @@
-import { PropNode, StateNode, State, Prop } from '../core/classes'
+import { Prop, PropNode, State, StateNode } from '../core/classes';
 import { ReactiveDataStore } from '../core/reactive-data-store';
 import { setForTransaction } from "../core/set-for-transaction";
-import { idGenFn } from '../core/ids';
-import { PropSummaryReturn, ChangesSummary, NonEmptyArray, ReactiveNodeOfValue, RAAction, SET_KEY_ACTION, AnyReactiveNode, ReactiveNode } from '../types';
-import { pushChange, propUtils } from '../utils/prop-utils';
+import { AnyReactiveNode, ChangesSummary, NonEmptyArray, PropSummaryReturn, RAAction, ReactiveNode, ReactiveNodeOfValue, SET_KEY_ACTION } from '../types';
+import { propUtils, pushChange } from '../utils/prop-utils';
 
 /** Create a Prop that behaves as a ReactiveArray. */
 export const ReactiveArraySignature = Symbol('ReactiveArraySignature');
@@ -111,8 +110,7 @@ export const setIndex = <T>(rds: ReactiveDataStore, rarr: PropNode<T[], any, any
     /* TODO: Simplify method with setForChange in RDS api */
     const targetNode = rarr.inputs[key];
     if (targetNode instanceof StateNode) {
-        let n2 = Number(idGenFn(targetNode));
-        rds.addChange(n2, value);
+        rds.addChange(targetNode, value);
     } else if (targetNode instanceof PropNode ) {
         if (targetNode.api.set) {
             targetNode.api.set(value, targetNode.inputs, setForTransaction);

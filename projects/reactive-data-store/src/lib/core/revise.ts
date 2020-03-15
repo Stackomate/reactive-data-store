@@ -18,7 +18,7 @@ export function *revise(rds: ReactiveDataStore, options: execOptions) {
     const selectedListeners = new Set<ListenerApi<ReactiveInputsArray>>();
     /* Finally, apply all changes */
     rds.reviewed.forEach((v, k) => {
-        const reactiveNode = idToObject(k.toString());
+        const reactiveNode = k;
         /* Update the value in the node */
         reactiveNode.value = v.value;
         /* Locate every listener supposed to be triggered */

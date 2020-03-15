@@ -7,7 +7,7 @@ export function convertReviewedToSummaries(reviewed: reviewedMap, subscriptionMo
     let result: SummaryMap = new Map();
     reviewed.forEach((summary, key) => {
         /* key in reviewed is a number */
-        const item = idToObject(`${key}`);
+        const item = key;
         /* TODO: Maybe remove any */
         let summaryResult: NodeSummary<any> = summary.pushed === true ? {
             value: summary.value,

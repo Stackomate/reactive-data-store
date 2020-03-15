@@ -1,7 +1,6 @@
-import { AnyReactiveNode, ArrayIndexes, execOptions, GlobalListener, innerListenersDeclaration, ListenerApi, listenersDeclaration, ListenFnInputs, listenReturn, ReactiveInputsArray, reviewedMap, SubscriptionModificationsMap, ResolutionOrderArray } from '../types';
+import { AnyReactiveNode, ArrayIndexes, execOptions, GlobalListener, innerListenersDeclaration, ListenerApi, listenersDeclaration, ListenFnInputs, listenReturn, ReactiveInputsArray, ResolutionOrderArray, reviewedMap, SubscriptionModificationsMap } from '../types';
 import { addDependencies } from './add-dependencies';
 import { PropNode } from './classes';
-import { idGenFn } from './ids';
 import { initRDS } from './init-rds';
 import { createGlobalListener, createLocalListener } from './listeners';
 import { maybeEvaluateProp } from './maybe-evaluate-prop';
@@ -91,7 +90,7 @@ export class ReactiveDataStore {
      */
     public reviewed: reviewedMap = new Map();
     /** A Set of Prop Ids yet to be reviewed */
-    public toReview: Set<number> = new Set();
+    public toReview: Set<PropNode<any, any, any>> = new Set();
 
     /* TODO: Only allow adding/removing nodes inside a transaction */
     /** A Set of Nodes that have been added to the graph since the last transaction */
@@ -108,9 +107,11 @@ export class ReactiveDataStore {
      * Contains a Map with the corresponding Starting State Node IDs (Number) and their respective next values.
      */
     /* TODO: Does it include props too ? */
-    public dirtyNodes: Map<number, any> = new Map<number, any>();
+    /* TODO: Create interface to narrow down key, value type */
+    public dirtyNodes: Map<AnyReactiveNode, any> = new Map<AnyReactiveNode, any>();
     /* Current item id of item being reviewed */
-    public currentItem: number;
+    /* TODO: Should narrow down? */
+    public currentItem: AnyReactiveNode;
     /* Only true when initializing the RDS */
     public isFirstRun: boolean = true;
 
@@ -149,38 +150,37 @@ export class ReactiveDataStore {
      * Check whether a State Node has been marked for change.
      * @param n State Node Id.
      */
-    markedForChange(n: number): boolean {
+    markedForChange(n: AnyReactiveNode): boolean {
         return this.dirtyNodes.has(n);
     }
 
     /**
      * Revoke change added to the provided State Node.
-     * @param nodeId
+     * @param node
      */
-    cancelChange(nodeId: number): void {
-        this.dirtyNodes.delete(nodeId);
-        this.triggerListeners(this.listeners.onCancelChange, [nodeId]);
+    cancelChange(node: AnyReactiveNode): void {
+        this.dirtyNodes.delete(node);
+        this.triggerListeners(this.listeners.onCancelChange, [node]);
     }
     /* TODO: Use object instead of id */
     /**
      * Enqueue a new change operation to a node.
-     * @param n Node id
+     * @param n Node
      * @param value
      */
-    addChange<M>(n: number, value: M): void {
+    addChange<M>(n: AnyReactiveNode, value: M): void {
         /* TODO: Forbid if n = propId */
         this.dirtyNodes.set(n, value);
         this.triggerListeners(this.listeners.onAddChange, [n, value]);
     }
     *markForCheck(options: execOptions, output: PropNode<any, any, any>): Generator {
-        let propId = idGenFn(output);
-        this.currentItem = propId;
-        this.triggerListeners(this.listeners.markPropDirty, [propId]);
-        this.toReview.add(propId);
+        this.currentItem = output;
+        this.triggerListeners(this.listeners.markPropDirty, [output]);
+        this.toReview.add(output);
         if (options.debug === true)
             yield;
     }
-    *propagateStateChange(options: execOptions, i: [number, any]) {
+    *propagateStateChange(options: execOptions, i: [AnyReactiveNode, any]) {
         yield* propagateStateChange(this, i, options);
     }
     *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray, C extends [string, any]>(options: execOptions, prop: PropNode<A, B, C>) {

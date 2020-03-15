@@ -1,15 +1,15 @@
 import { ReactiveDataStore } from './reactive-data-store';
-import { execOptions } from '../types';
+import { execOptions, AnyReactiveNode } from '../types';
 import { idToObject } from './ids';
 import { yieldForEach } from '../reusable/yield-for-each';
 
-export function *propagateStateChange(rds: ReactiveDataStore, i: [number, any], options: execOptions) {
+export function *propagateStateChange(rds: ReactiveDataStore, i: [AnyReactiveNode, any], options: execOptions) {
     rds.currentItem = i[0];
     rds.triggerListeners(rds.listeners.markStateAsCurrent, [i[0]]);
     if (options.debug === true)
         yield;
     /* Grab item by id */
-    let item = idToObject(`${i[0]}`);
+    let item = i[0];
     /* Mark each one of state dependants for check */
     yield* yieldForEach(item.outputs, rds.markForCheck.bind(rds, options));
     /* Remove self from dirtyNodes and add to reviewed */

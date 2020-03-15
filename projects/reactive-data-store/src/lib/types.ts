@@ -155,11 +155,11 @@ export type NodeSetType = Set<AnyReactiveNode>;
 
 /** Types for triggers */
 export type innerListenersDeclaration = {
-    onCancelChange: (nodeId: number) => void;
-    onAddChange: <Value>(nodeId: number, value: Value) => void;
-    markPropDirty: (nodeId: number) => void;
-    markStateAsCurrent: (nodeId: number) => void;
-    evaluatedProperty: <Value>(nodeId: number, changed: boolean, result: Value) => void;
+    onCancelChange: (node: AnyReactiveNode) => void;
+    onAddChange: <Value>(node: AnyReactiveNode, value: Value) => void;
+    markPropDirty: (node: AnyReactiveNode) => void;
+    markStateAsCurrent: (node: AnyReactiveNode) => void;
+    evaluatedProperty: <Value>(node: AnyReactiveNode, changed: boolean, result: Value) => void;
     onReset: () => void;
 }
 
@@ -292,5 +292,5 @@ export type listenReturn = {
     clear: () => void;
 }
 
-/* TODO: Improve type */
-export type reviewedMap = Map<number, ReviewedNodeResult<any, any>>;
+/* TODO: Narrow down type? */
+export type reviewedMap = Map<AnyReactiveNode, ReviewedNodeResult<any, any>>;
