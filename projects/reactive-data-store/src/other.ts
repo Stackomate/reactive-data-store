@@ -1,11 +1,3 @@
-/* TODO: This wont work */
-// listen<K extends ReactiveInputsArray>(deps: K, listenFn: (p: ListenFnInputs<K> & WithIterator<K>) => void): listenReturn;
-
-/* TODO: This doesnt work, would be used together with ListenFnInputs */
-// export type WithIterator<K extends AnyReactiveNode[]> = {
-//     [Symbol.iterator](): Iterator<any, any, any>
-// };
-
 /* Ideas
 
 Imagine/Dream: Create a hypothetical transaction that will be computed, but not applied.
