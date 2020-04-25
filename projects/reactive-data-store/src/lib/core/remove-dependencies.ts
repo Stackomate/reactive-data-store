@@ -1,4 +1,5 @@
-import { ReactiveInputsArray, ArrayIndexes } from '../types';
+import { ArrayIndexes } from "../types-general";
+import { ReactiveInputsArray } from "../types-base";
 import { idGenFn } from './ids';
 import { PropNode } from './classes';
 import { ReactiveDataStore } from './reactive-data-store';
@@ -7,7 +8,6 @@ export function removeDependencies<I extends ReactiveInputsArray, J extends Arra
     indexes.forEach((index) => {
         let input = target.inputs[index as number];
         /* remove input from target's inputs */
-        /* TODO: Use null or undefined here? */
         target.inputs[index] = undefined;
         /* Update array length */
         /* TODO: Fix edge cases */
@@ -18,6 +18,10 @@ export function removeDependencies<I extends ReactiveInputsArray, J extends Arra
         /* Check whether we can remove target from input's output set*/
         let canRemoveFromOutput = true;
         /* TODO: Remove type any */
+
+        /* This code is looking for duplicates. Essentially, we have already removed the index input,
+        but the same node could be in another index. If so, we should not remove the target node
+        from the input */
         target.inputs.forEach((ti: any) => {
             if (ti === input) {
                 canRemoveFromOutput = false;
@@ -26,6 +30,7 @@ export function removeDependencies<I extends ReactiveInputsArray, J extends Arra
         if (canRemoveFromOutput) {
             input.outputs.delete(target);
         }
+        
         /* TODO: Recreating maps during every new change, this can be optimized with one mutable instance */
         let oldTargetModifications = rds.subscriptionModifications.get(target) || {
             added: new Map(),
@@ -48,5 +53,5 @@ export function removeDependencies<I extends ReactiveInputsArray, J extends Arra
         });
     });
     /* Mark target for revision */
-    rds.toReview.add(idGenFn(target));
+    rds.toReview.add(target);
 }

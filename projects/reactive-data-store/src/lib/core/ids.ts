@@ -1,4 +1,4 @@
-import { AnyReactiveNode } from '../types';
+import { AnyReactiveNode } from "../types-base";
 /* TODO: Move code to Reactive Data Store */
 /* ID GENERATION FUNCTIONS */
 /* TODO: Use weakmap for performance if possible */

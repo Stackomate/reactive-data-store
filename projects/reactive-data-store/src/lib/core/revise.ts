@@ -1,8 +1,11 @@
 import { ReactiveDataStore } from './reactive-data-store';
-import { execOptions, ListenerApi, ReactiveInputsArray, AnyReactiveNode } from '../types';
+import { execOptions, ResolutionOrderArray } from '../types';
+import { ReactiveInputsArray, AnyReactiveNode } from "../types-base";
+import { ListenerApi } from "../types-listeners";
 import { yieldForEach } from '../reusable/yield-for-each';
 import { idToObject } from './ids';
 import { convertReviewedToSummaries } from './convert-reviewed-to-summaries';
+import { PropNode } from './classes';
 
 export function *revise(rds: ReactiveDataStore, options: execOptions) {
     rds.isRevising = true;
@@ -11,13 +14,13 @@ export function *revise(rds: ReactiveDataStore, options: execOptions) {
     /* Now, starting from props level 1, iterate*/
     let propsLevel = 1;
     while (propsLevel < rds.sorted.length) {
-        yield* yieldForEach(rds.sorted[propsLevel], rds.maybeEvaluateProp.bind(rds, options));
+        yield* yieldForEach(rds.sorted[propsLevel] as Set<PropNode<any, any, any>>, rds.maybeEvaluateProp.bind(rds, options));
         propsLevel++;
     }
     const selectedListeners = new Set<ListenerApi<ReactiveInputsArray>>();
     /* Finally, apply all changes */
     rds.reviewed.forEach((v, k) => {
-        const reactiveNode = idToObject(k.toString());
+        const reactiveNode = k;
         /* Update the value in the node */
         reactiveNode.value = v.value;
         /* Locate every listener supposed to be triggered */
@@ -62,19 +65,20 @@ export function *revise(rds: ReactiveDataStore, options: execOptions) {
     let erroredNodes: Set<AnyReactiveNode> = new Set();
     /* TODO: Implement errored functionality */
     let status: 'SUCCESS' | 'ERROR' = 'SUCCESS';
-    let resolutionOrder: Array<Set<AnyReactiveNode>> = rds.sorted;
+    let resolutionOrder: ResolutionOrderArray = rds.sorted;
     /* Run all global listeners */
+    const listenerSummary = {
+        summaries: cachedReviewed,
+        checkedNodes,
+        changedNodes,
+        addedNodes: cachedAddedNodes,
+        removedNodes: cachedRemovedNodes,
+        erroredNodes,
+        allNodes: rds.allNodes,
+        status,
+        resolutionOrder
+    };
     rds.globalListenersList.forEach(listener => {
-        listener({
-            summaries: cachedReviewed,
-            checkedNodes,
-            changedNodes,
-            addedNodes: cachedAddedNodes,
-            removedNodes: cachedRemovedNodes,
-            erroredNodes,
-            allNodes: rds.allNodes,
-            status,
-            resolutionOrder
-        });
+        listener(listenerSummary);
     });
 }

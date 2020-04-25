@@ -1,5 +1,6 @@
 import {PropNode, StateNode } from './classes'
-import { NodeSetType, AnyReactiveNode} from '../types'
+import { ResolutionOrderArray} from '../types'
+import { AnyReactiveNode } from "../types-base";
 
 
 /**
@@ -8,7 +9,7 @@ import { NodeSetType, AnyReactiveNode} from '../types'
 export function getAllNodes(items: AnyReactiveNode[]): Set<AnyReactiveNode> {
 
 
-  const nodeSet: NodeSetType = new Set();
+  const nodeSet: Set<AnyReactiveNode> = new Set();
   const visited: Array<AnyReactiveNode> = [];
   let currentIndex = 0;
 
@@ -60,7 +61,7 @@ export const getAllEdges = (nodes: AnyReactiveNode[]) => {
 }
 
 /* TODO: Typing */
-export function toposort (nodes: Set<AnyReactiveNode>): Array<Set<AnyReactiveNode>> {
+export function toposort (nodes: Set<AnyReactiveNode>): ResolutionOrderArray {
   let levels = new Map(Array.from(nodes).map(n => [n, 0]));
   let count = 0;
 
@@ -83,10 +84,11 @@ export function toposort (nodes: Set<AnyReactiveNode>): Array<Set<AnyReactiveNod
 
   step(onlyStateObjects)
 
-  const result: Array<Set<AnyReactiveNode>> = [];
+  const result: ResolutionOrderArray = [];
   Array.from(levels.entries()).forEach(([item, level]) => {
-    result[level] = result[level] || new Set<AnyReactiveNode>();
-    result[level].add(item)
+    /* TODO: remove as any */
+    (result[level] as Set<AnyReactiveNode>) = result[level] || new Set<AnyReactiveNode>();
+    (result[level]as Set<AnyReactiveNode>).add(item)
   }) 
   return result;
 

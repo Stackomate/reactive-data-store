@@ -1,5 +1,6 @@
 import { StateNode } from './classes';
-import { AnyReactiveNode, SubscriptionModificationsMap } from '../types';
+import { SubscriptionModificationsMap } from '../types';
+import { AnyReactiveNode } from "../types-base";
 /* TODO: Add Specific subscription modification types (narrow down) */
 export function getSubscriptionChanges(item: AnyReactiveNode, subscriptionModifications: SubscriptionModificationsMap) {
     if (item instanceof StateNode) {

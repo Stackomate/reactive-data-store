@@ -1,4 +1,10 @@
-import { SubscriptionChanges, AnyReactiveNode, ChangesSummary, ReactiveNode } from '../types';
+import { SubscriptionChanges, InputChangesSummary } from '../types';
+import { AnyReactiveNode, ReactiveNode } from "../types-base";
+
+ type PushReturn<V> = {
+     actions: [['SET', V]],
+     value: V
+ };
 /**
  * Compare current and previous values using Javascript equality operator ===.
  * If changed, return SET action with current value.
@@ -6,9 +12,7 @@ import { SubscriptionChanges, AnyReactiveNode, ChangesSummary, ReactiveNode } fr
  * @param value 
  * @param previous 
  */
-
- /* TODO: Improve any (important) */
-export const pushIfChanged = <T>(value: T, previous: T) : any => {
+export const pushIfChanged = <T>(value: T, previous: T) : PushReturn<T> => {
     return value !== previous ? pushChange(value) : null;
 }
 
@@ -16,7 +20,7 @@ export const pushIfChanged = <T>(value: T, previous: T) : any => {
  * Shortcut for returning a SET action with the value, as well as the value itself.
  * @param value 
  */
-export const pushChange = <T>(value: T) : any => {
+export const pushChange = <T>(value: T) : PushReturn<T> => {
     return {
         actions: [['SET', value]],
         value
@@ -25,7 +29,7 @@ export const pushChange = <T>(value: T) : any => {
 
 /* TODO: Maybe separate into different items */
 /* TODO: Improve type, narrow down Reactive node type */
-export const propUtils = (inputs: ChangesSummary<ReactiveNode<any, any, any>>[], subs: SubscriptionChanges) => ({
+export const propUtils = (inputs: InputChangesSummary<ReactiveNode<any, any, any>>[], subs: SubscriptionChanges) => ({
     onInitSelf: (fn: () => void) => {
       if (subs.isInit === true) {
           fn();
@@ -51,7 +55,7 @@ export const propUtils = (inputs: ChangesSummary<ReactiveNode<any, any, any>>[],
     },
     /* TODO: Maybe improve performance by using closure */
     /* TODO There should be a samewithchanges map in subscription changes, for better performance */
-    forSameWithChanges: (fn: (node: ChangesSummary<AnyReactiveNode>, index: number) => void) => {
+    forSameWithChanges: (fn: (node: InputChangesSummary<AnyReactiveNode>, index: number) => void) => {
         let changedIndexes = new Set<number>();
 
         inputs.forEach((value, index) => {

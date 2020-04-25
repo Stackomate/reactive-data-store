@@ -1,25 +1,27 @@
-import { ReactiveInputsArray, execOptions, ReviewedNodeResult } from '../types';
-import { idGenFn } from './ids';
-import { PropNode } from './classes';
 import { yieldForEach } from '../reusable/yield-for-each';
+import { execOptions, ReviewedNodeResult, InputChangesSummary } from '../types';
+import { ReactiveInputsArray } from "../types-base";
+import { PropNode } from './classes';
 import { ReactiveDataStore } from './reactive-data-store';
+import { DefaultActionTuple } from '../types-actions';
 
-export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray, C extends [string, any]>(
+export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray, C extends DefaultActionTuple>(
     rds: ReactiveDataStore, prop: PropNode<A, B, C>, options: execOptions
 ) {
-    const propId = idGenFn(prop);
-    if (rds.toReview.has(propId)) {
-        rds.currentItem = idGenFn(prop);
+    if (rds.toReview.has(prop)) {
+        rds.currentItem = prop;
         if (options.debug === true)
             yield;
         /* TODO: Typings */
         /* TODO: Performance may be improved */
         /* This is similar to map(), but it keeps "empty" slots in the array */
-        const args = prop.inputs.reduce((acc, input, index) => {
+        const args: {
+            [P in keyof B]: InputChangesSummary<B[P]>
+        } = prop.inputs.reduce((acc, input, index) => {
             if (input === undefined) {
                 return acc;
             }
-            const maybeReviewed = (rds.reviewed.get(idGenFn(input)) || {
+            const maybeReviewed = (rds.reviewed.get(input) || {
                 actions: [],
                 value: input.value,
                 previous: input.value,
@@ -32,7 +34,9 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
                 previous: input.value
             };
             return acc;
-        }, []);
+        }, 
+        /* TODO: Remove any */
+        [] as any);
         const subscriptionChanges = {
             /* TODO: Improve code */
             added: (rds.subscriptionModifications.get(prop) || {
@@ -46,9 +50,7 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
         /* This is the result returned directly from the function call */
         /* TODO: Add error-handling cases */
         let runFn = prop.fn(
-            /* TODO: Fix type */
-            args as any, prop.value, subscriptionChanges);
-        /* We augument the result */
+            args, prop.value, subscriptionChanges);
 
         /* Throw error if undefined (no return) */
         /* TODO: May be disabled for production? */
@@ -56,20 +58,22 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
             throw new Error('Prop did not return null or actions and value')
         }
 
-        /* TODO: Any types */
-        let fnResult: ReviewedNodeResult<any, any> = runFn === null ? {
+        /* We augument the returned object */
+        let fnResult: ReviewedNodeResult<A, B, C> = runFn === null ? {
             value: prop.value,
             previousValue: prop.value,
             pushed: false,
             actions: [],
+            /* TODO: Type */
             dependencyChanges: args
-        } : {
-                actions: runFn.actions,
-                value: runFn.value,
-                previousValue: prop.value,
-                pushed: true,
-                dependencyChanges: args
-            };
+        } : 
+        {
+            actions: runFn.actions,
+            value: runFn.value,
+            previousValue: prop.value,
+            pushed: true,
+            dependencyChanges: args
+        };
         let changed = runFn !== null;
         if ((runFn !== null) && (runFn.actions.length === 0)) {
             throw new Error(`Declared change, but provided empty actions array`);
@@ -78,14 +82,14 @@ export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray,
         if (changed === false && rds.isFirstRun === true) {
             throw new Error(`Property did not emit during init: ${prop.label}`);
         }
-        rds.reviewed.set(propId, fnResult);
-        rds.triggerListeners(rds.listeners.evaluatedProperty, [propId, changed, runFn]);
+        rds.reviewed.set(prop, fnResult);
+        rds.triggerListeners(rds.listeners.evaluatedProperty, [prop, changed, runFn]);
         if (options.debug === true)
             yield;
         if (changed) {
             yield* yieldForEach(prop.outputs, rds.markForCheck.bind(rds, options));
         }
-        rds.toReview.delete(propId);
+        rds.toReview.delete(prop);
         if (options.debug === true)
             yield;
     }

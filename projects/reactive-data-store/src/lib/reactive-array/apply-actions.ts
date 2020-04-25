@@ -1,4 +1,4 @@
-import { RAAction } from '../types';
+import { RAAction } from "../types-actions";
 
 /**
  * Given an array of actions, apply them to an array and return a new array as result.
@@ -30,8 +30,11 @@ function modify<T>(arr: T[], action: RAAction<T>): T[] {
       delete nArr[action[1]];
       return nArr;
     case 'SET_KEY_INNER':
-      /* TODO: Remove any */
-      (nArr[action[1][0]] as any) = modify(nArr[action[1][0]] as any, action[1][1])
+      /* TODO: Remove any, if possible */
+      const innerActions = action[1][1] as RAAction<any>[];
+      const index = action[1][0];
+      /* TODO: Remove any, if possible */
+      (nArr[index] as any) = applyActions(innerActions, nArr[index] as any)
       return nArr;
   }
 }

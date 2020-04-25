@@ -521,8 +521,8 @@ describe('ReactiveArray', () => {
     let sum0: NodeSummary<typeof secondArr> = {
       pushed: true,
       actions: [
-        ['SET_KEY_INNER', [0, ['SET_KEY', [1, 98]]]],
-        ['SET_KEY_INNER', [0, ['SET_KEY', [2, 97]]]]
+        ['SET_KEY_INNER', [0, [ ['SET_KEY', [1, 98]] ] ]],
+        ['SET_KEY_INNER', [0, [ ['SET_KEY', [2, 97]] ] ]]
       ],
       value: [[1, 98, 97], 4],
       previousValue: [[1, 2, 3], 4],

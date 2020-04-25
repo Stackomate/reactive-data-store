@@ -1,5 +1,6 @@
 import { PropNode, Prop } from '../core/classes';
-import { MapFnType, ReactiveInputsArray } from '../types';
+import { MapFnType } from '../types';
+import { ReactiveInputsArray } from "../types-base";
 
 
 
