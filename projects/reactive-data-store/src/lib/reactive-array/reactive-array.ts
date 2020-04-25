@@ -1,7 +1,10 @@
-import { Prop, PropNode, State, StateNode } from '../core/classes';
+import { Prop, PropNode, State, StateNode, PropFactory } from '../core/classes';
 import { ReactiveDataStore } from '../core/reactive-data-store';
 import { setForTransaction } from "../core/set-for-transaction";
-import { AnyReactiveNode, InputChangesSummary, NonEmptyArray, PropFnReturn, RAAction, ReactiveNode, ReactiveNodeOfValue, SET_KEY_ACTION } from '../types';
+import { InputChangesSummary, PropFnReturn } from '../types';
+import { NonEmptyArray } from "../types-general";
+import { AnyReactiveNode, ReactiveNode, ReactiveNodeOfValue } from "../types-base";
+import { RAAction, SET_KEY_ACTION } from "../types-actions";
 import { propUtils, pushChange } from '../utils/prop-utils';
 
 /** Create a Prop that behaves as a ReactiveArray. */
@@ -20,7 +23,7 @@ export const ReactiveArray = function <T>(arr: (T | ReactiveNode<T, any, any>)[]
     });
 
     /* TODO: Improve type */
-    const ret = Prop(reactiveNodesInputs, (inputChanges, previousValue: T[], subscriptionChanges): PropFnReturn<T[], RAAction<T>> => {
+    const ret = PropFactory(reactiveNodesInputs) <T[], RAAction<T>> ((inputChanges, previousValue: T[], subscriptionChanges) => {
 
         let { isInit } = subscriptionChanges;
         let value = previousValue;
@@ -113,7 +116,7 @@ export const setIndex = <T>(rds: ReactiveDataStore, rarr: PropNode<T[], any, any
         rds.addChange(targetNode, value);
     } else if (targetNode instanceof PropNode ) {
         if (targetNode.api.set) {
-            targetNode.api.set(value, targetNode.inputs, setForTransaction);
+            targetNode.api.set(value, targetNode.inputs, setForTransaction.bind(rds));
         } else {
             throw new Error('Prop does not contain set method')
         }

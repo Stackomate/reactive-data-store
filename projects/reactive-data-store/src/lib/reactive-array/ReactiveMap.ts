@@ -1,9 +1,10 @@
 import { MapValuesTo } from '../utils/prop-factories';
 import { ReactiveArray } from './reactive-array';
-import { ReactiveNode, RMapAction, NonEmptyArray } from '../types';
+import { NonEmptyArray } from "../types-general";
+import { ReactiveNode } from "../types-base";
+import { RMapAction } from "../types-actions";
 import { Prop, PropFactory } from '../core/classes';
 import { pushChange, propUtils } from '../utils/prop-utils';
-import { RAAction } from 'reactive-data-store/lib/types';
 /* TODO: type */
 export const ReactiveMap = <K, V>(entries: Array<[K | ReactiveNode<K, any, any>, V | ReactiveNode<V, any, any>]>) => {
     /* TODO: Enforce tuple */

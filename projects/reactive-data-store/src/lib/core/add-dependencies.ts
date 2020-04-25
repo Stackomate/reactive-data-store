@@ -1,4 +1,4 @@
-import { ReactiveNode } from '../types';
+import { ReactiveNode } from "../types-base";
 import { PropNode, StateNode } from './classes';
 import { ReactiveDataStore } from './reactive-data-store';
 import { toposort } from './utils';

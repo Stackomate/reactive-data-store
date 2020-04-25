@@ -1,5 +1,6 @@
 import { PropNode, StateNode } from './classes';
-import { NodeSummary, SubscriptionModificationsMap, SummaryMap, reviewedMap, AnyReactiveNode } from '../types';
+import { NodeSummary, SubscriptionModificationsMap, SummaryMap, reviewedMap } from '../types';
+import { AnyReactiveNode } from "../types-base";
 import { idToObject } from './ids';
 import { getSubscriptionChanges } from "./get-subscription-changes";
 /* TODO: Types */

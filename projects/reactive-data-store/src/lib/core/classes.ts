@@ -1,6 +1,7 @@
-import { ReactiveInputsArray, AnyReactiveNode, DefaultActionTuple } from '../types';
+import { ReactiveInputsArray, AnyReactiveNode } from "../types-base";
 import { PropFn } from '../types';
 import { ReactiveDataStore } from './reactive-data-store';
+import { DefaultActionTuple } from '../types-actions';
 /* TODO: Combine documentation from factories and Nodes to improve maintainability */
 /* TODO: Combine generics from factories and Nodes to improve maintainability */
 

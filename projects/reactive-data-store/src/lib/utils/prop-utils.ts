@@ -1,4 +1,5 @@
-import { SubscriptionChanges, AnyReactiveNode, InputChangesSummary, ReactiveNode } from '../types';
+import { SubscriptionChanges, InputChangesSummary } from '../types';
+import { AnyReactiveNode, ReactiveNode } from "../types-base";
 
  type PushReturn<V> = {
      actions: [['SET', V]],

@@ -1,5 +1,7 @@
 import { ReactiveDataStore } from './reactive-data-store';
-import { execOptions, ListenerApi, ReactiveInputsArray, AnyReactiveNode, ResolutionOrderArray } from '../types';
+import { execOptions, ResolutionOrderArray } from '../types';
+import { ReactiveInputsArray, AnyReactiveNode } from "../types-base";
+import { ListenerApi } from "../types-listeners";
 import { yieldForEach } from '../reusable/yield-for-each';
 import { idToObject } from './ids';
 import { convertReviewedToSummaries } from './convert-reviewed-to-summaries';

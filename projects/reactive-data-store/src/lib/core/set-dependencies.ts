@@ -1,5 +1,5 @@
 import { PropNode, StateNode } from './classes';
-import { ReactiveNode } from '../types';
+import { ReactiveNode } from "../types-base";
 import { idGenFn } from './ids';
 import { toposort } from './utils';
 import { ReactiveDataStore } from './reactive-data-store';

@@ -1,4 +1,4 @@
-import { RAAction } from '../types';
+import { RAAction } from "../types-actions";
 
 /**
  * Given an array of actions, apply them to an array and return a new array as result.

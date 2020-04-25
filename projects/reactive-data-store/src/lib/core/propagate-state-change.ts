@@ -1,5 +1,6 @@
 import { ReactiveDataStore } from './reactive-data-store';
-import { execOptions, AnyReactiveNode } from '../types';
+import { execOptions } from '../types';
+import { AnyReactiveNode } from "../types-base";
 import { idToObject } from './ids';
 import { yieldForEach } from '../reusable/yield-for-each';
 

@@ -1,7 +1,9 @@
 import { yieldForEach } from '../reusable/yield-for-each';
-import { execOptions, ReactiveInputsArray, ReviewedNodeResult, InputChangesSummary, DefaultActionTuple } from '../types';
+import { execOptions, ReviewedNodeResult, InputChangesSummary } from '../types';
+import { ReactiveInputsArray } from "../types-base";
 import { PropNode } from './classes';
 import { ReactiveDataStore } from './reactive-data-store';
+import { DefaultActionTuple } from '../types-actions';
 
 export function *maybeEvaluateProp<A extends any, B extends ReactiveInputsArray, C extends DefaultActionTuple>(
     rds: ReactiveDataStore, prop: PropNode<A, B, C>, options: execOptions

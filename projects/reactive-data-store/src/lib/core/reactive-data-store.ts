@@ -1,6 +1,9 @@
-import { AnyReactiveNode, ArrayIndexes, execOptions, GlobalListener, innerListenersDeclaration, ListenerApi, listenersDeclaration, ListenFnInputs, listenReturn, ReactiveInputsArray, ResolutionOrderArray, reviewedMap, SubscriptionModificationsMap, DefaultActionTuple } from '../types';
+import { execOptions, ResolutionOrderArray, reviewedMap, SubscriptionModificationsMap } from '../types';
+import { ArrayIndexes } from "../types-general";
+import { AnyReactiveNode, ReactiveInputsArray } from "../types-base";
+import { ListenerApi, ListenFnInputs, GlobalListener, listenReturn, listenersDeclaration, innerListenersDeclaration } from "../types-listeners";
 import { addDependencies } from './add-dependencies';
-import { PropNode } from './classes';
+import { PropNode, StateNode } from './classes';
 import { initRDS } from './init-rds';
 import { createGlobalListener, createLocalListener } from './listeners';
 import { maybeEvaluateProp } from './maybe-evaluate-prop';
@@ -10,6 +13,8 @@ import { revise } from './revise';
 import { setDependencies } from './set-dependencies';
 import { setForTransaction } from './set-for-transaction';
 import { toposort } from './utils';
+import { DefaultActionTuple } from '../types-actions';
+import { getDisconnectedNodes } from './get-reactive-nodes';
 /* TODO: Add generics */
 /* TODO: 
     * Perhaps use object instead of array for inputChanges in propFn. Or Set/Map (Probably not)
@@ -168,7 +173,7 @@ export class ReactiveDataStore {
      * @param n Node
      * @param value
      */
-    addChange<M>(n: AnyReactiveNode, value: M): void {
+    addChange<M>(n: StateNode<any>, value: M): void {
         /* TODO: Forbid if n = propId */
         this.dirtyNodes.set(n, value);
         this.triggerListeners(this.listeners.onAddChange, [n, value]);
@@ -192,6 +197,30 @@ export class ReactiveDataStore {
         this.allNodes.add(node);
         this.sorted = toposort(this.allNodes);
     }
+
+    appendNodes(nodes: AnyReactiveNode[], review = true) {
+        let disconnectedNodes = getDisconnectedNodes(this, nodes);
+
+        disconnectedNodes.forEach(dNode => {
+            this.allNodes.add(dNode);
+
+            if (dNode instanceof StateNode) {
+                /* TODO: Is this necessary? */
+                this.addChange(dNode, dNode.value);
+            } else if (dNode instanceof PropNode) {
+                this.toReview.add(dNode)
+            }
+        })
+
+        this.sorted = toposort(this.allNodes);
+
+        if (review === true) {
+            this.revise({
+                debug: false
+            }).next();            
+        }
+    }
+
     *revise(options: execOptions) {
         yield* revise(this, options);
 

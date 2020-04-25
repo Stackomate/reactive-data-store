@@ -1,5 +1,6 @@
 import {PropNode, StateNode } from './classes'
-import { NodeSetType, AnyReactiveNode, ResolutionOrderArray} from '../types'
+import { ResolutionOrderArray} from '../types'
+import { AnyReactiveNode } from "../types-base";
 
 
 /**
@@ -8,7 +9,7 @@ import { NodeSetType, AnyReactiveNode, ResolutionOrderArray} from '../types'
 export function getAllNodes(items: AnyReactiveNode[]): Set<AnyReactiveNode> {
 
 
-  const nodeSet: NodeSetType = new Set();
+  const nodeSet: Set<AnyReactiveNode> = new Set();
   const visited: Array<AnyReactiveNode> = [];
   let currentIndex = 0;
 

@@ -1,4 +1,5 @@
-import { ReactiveInputsArray, ListenFnInputs, ListenerApi, GlobalListener } from '../types';
+import { ReactiveInputsArray } from "../types-base";
+import { ListenFnInputs, ListenerApi, GlobalListener } from "../types-listeners";
 import { ReactiveDataStore } from './reactive-data-store';
 
 export function createLocalListener<K extends ReactiveInputsArray>(rds: ReactiveDataStore, d: K, lFn: (p: ListenFnInputs<K>) => void) {
